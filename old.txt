@@ -1,0 +1,82 @@
+#include "tools.h"
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <vector>
+
+using namespace std;
+
+struct BasicV
+{
+	int matrixID, weight;
+	string name;
+};
+
+struct Vertex
+{
+	int matrixID;
+	string name;
+
+	vector<BasicV> connectedNodes;
+};
+
+struct Graph
+{
+	vector<Vertex> list;
+};
+
+void createGraph(string filename, Graph *graph)
+{
+	string srcName, destName;
+	int srcID, destID;
+	int weight;
+	Vertex temp;
+	BasicV temp2;
+
+	ifstream network(filename);
+
+	if (network.is_open())
+	{
+		while (!network.eof())
+		{
+			network >> srcID;
+			network >> srcName;
+			network >> destID;
+			network >> destName;
+			network >> weight;
+
+			temp.matrixID = srcID;
+			temp.name = srcName;
+			temp2.matrixID = destID;
+			temp2.name = destName;
+			temp2.weight = weight;
+			temp.connectedNodes.push_back(temp2);
+			graph->list.push_back(temp);
+			temp.connectedNodes.pop_back();
+		}
+	}
+	else
+	{
+		//exit
+	}
+}
+
+void testPrint(Graph *graph)
+{
+	Vertex temp;
+	for (unsigned int i = 0; i < graph->list.size(); i++)
+	{
+		temp = graph->list[i];
+		cout << temp.matrixID << ' ' << temp.name << ' ' << temp.connectedNodes[0].matrixID << ' ' << temp.connectedNodes[0].name << ' ' << temp.connectedNodes[0].weight << '\n';
+	}
+}
+
+int main()
+{
+	setConsoleSize();
+	Graph test;
+	createGraph("network.txt", &test);
+	testPrint(&test);
+	pause(true);
+	return 0;
+}
